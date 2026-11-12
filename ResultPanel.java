@@ -23,7 +23,7 @@ class ResultPanel {
         this.data = data;
     }
 
-    public void createWindows(JFrame window, String name){
+    public void createWindows(JFrame window, String name, String file1_name, String file2_name){
         JFrame fenetre = new JFrame("Result of Plagiarism Detection");
         fenetre.setSize(1000, 1000);
         fenetre.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -54,6 +54,18 @@ class ResultPanel {
         percentage_result.setBounds(50, 100, 500, 30);
         fenetre.add(percentage_result);
 
+        try (Connection conn = DriverManager.getConnection(User.DB_URL, User.DB_USER, User.DB_PASSWORD)) {
+            String query = "UPDATE files SET percentage_plagia = ? WHERE username = ? AND file_name1 = ? AND file_name2 = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setDouble(1, percentage);
+            stmt.setString(2, name);
+            stmt.setString(3, file1_name);
+            stmt.setString(4, file2_name);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         JButton button1 = new JButton("Exit");
         button1.setBounds(50, 150, 200, 50);
         button1.addActionListener( e -> {
@@ -68,16 +80,6 @@ class ResultPanel {
             window.setVisible(true);
         });
         fenetre.add(button2);
-
-        try (Connection conn = DriverManager.getConnection(User.DB_URL, User.DB_USER, User.DB_PASSWORD)) {
-            String query = "UPDATE files SET percentage_plagia = ? WHERE username = ?";
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setDouble(1, percentage);
-            stmt.setString(2, name);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
         
         fenetre.setVisible(true);
     }

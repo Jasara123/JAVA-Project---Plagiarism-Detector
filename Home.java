@@ -36,7 +36,12 @@ public class Home {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         frame.add(titleLabel, BorderLayout.NORTH);
 
-        
+        Object[][] fileData = displayData(username);
+
+        // Table to display files and plagiarism percentages
+        String[] columnNames = {"File 1", "File 2", "Plagiarism Percentage"};
+        DefaultTableModel tableModel = new DefaultTableModel(fileData, columnNames);
+        fileTable = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(fileTable);
         frame.add(tableScrollPane, BorderLayout.CENTER);
 
@@ -61,7 +66,7 @@ public class Home {
         frame.add(comparePanel, BorderLayout.SOUTH);
 
         compareButton.addActionListener(e -> {
-            ControlPanel controlPanel = new ControlPanel();
+            ControlPanel controlPanel = new ControlPanel(this);
             controlPanel.createWindows(frame, username);
         });
 
@@ -70,7 +75,6 @@ public class Home {
             fenetre.setVisible(true);
         });
 
-        // Make the frame visible
         frame.setVisible(true);
     }
 

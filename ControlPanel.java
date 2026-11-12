@@ -24,7 +24,13 @@ public class ControlPanel {
     private String result;
     Boolean isFileUploaded = false;
     private JFrame fenetre =  new JFrame("Plagiarism Detector");
+    String name_file1;
+    String name_file2;
+    private Home home;
 
+    public ControlPanel(Home home) {
+        this.home = home;
+    }
 
     public JFrame getFenetre() {
         return fenetre;
@@ -70,6 +76,7 @@ public class ControlPanel {
                         JOptionPane.showMessageDialog(fenetre, "Fichier"+(i + 1)+" envoyé avec succès !");
                         try (Connection conn = DriverManager.getConnection(User.DB_URL, User.DB_USER, User.DB_PASSWORD)){
                             if(i == 0){
+                                name_file1 = dossierCible.getName();
                                 String query = "INSERT INTO files (username, file_name1) VALUES (?, ?)";
                                 PreparedStatement stmt = conn.prepareStatement(query);
                                 stmt.setString(1, name);
@@ -77,6 +84,7 @@ public class ControlPanel {
                                 stmt.executeUpdate();
                             }
                             if(i == 1){
+                                name_file2 = dossierCible.getName();
                                 String query1 = "UPDATE files SET file_name2 = ? WHERE username = ?";
                                 PreparedStatement stmt1 = conn.prepareStatement(query1);
                                 stmt1.setString(1, dossierCible.getName());
@@ -99,7 +107,6 @@ public class ControlPanel {
 
         button2.addActionListener(e -> {
             fenetre.dispose();
-            Home home = new Home();
             home.refreshTable(name);
             frame.setVisible(true);
         });
@@ -107,7 +114,7 @@ public class ControlPanel {
         button3.addActionListener(e ->{
             if(isFileUploaded){
                 ResultPanel resultwindows = new ResultPanel(data);
-                resultwindows.createWindows(getFenetre(), name);
+                resultwindows.createWindows(getFenetre(), name, name_file1, name_file2);
             }else{
                 JOptionPane.showMessageDialog(fenetre, "Please upload both files before checking the result.");
             }
